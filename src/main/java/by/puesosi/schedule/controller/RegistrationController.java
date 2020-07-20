@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.validation.Valid;
+
 @Controller
 public class RegistrationController {
 
@@ -25,7 +27,7 @@ public class RegistrationController {
     }
 
     @PostMapping("/registration")
-    public String checkRegistrationInfo(@ModelAttribute("user") User user, BindingResult bindingResult, Model model){
+    public String checkRegistrationInfo(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){
             return "guest/register";
         }
