@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Schedule</title>
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/flexslider.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+    <link href="/css/queries.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+    <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body id="top"
+      th:onload="'javascript:setPadding(' + ${checkCity} + ',' + ${checkInstitution} + ',' + ${findInstitutions}
+      + ',' + ${checkUniversitySchedule} + ')'">
+<header id="home">
+    <nav>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2">
+                    <nav class="pull">
+                        <ul class="top-nav">
+                            <li><a href="/schedule/">Home page <span class="indicator"><i
+                                    class="fa fa-angle-right"></i></span></a></li>
+                            <li>
+                                <div sec:authorize="!isAuthenticated()">
+                                    <a href="/login">Sign In <span class="indicator"><i
+                                            class="fa fa-angle-right"></i></span></a>
+                                </div>
+                            </li>
+                            <li>
+                                <div sec:authorize="!isAuthenticated()">
+                                    <a href="/registration">Sign Up <span class="indicator"><i
+                                            class="fa fa-angle-right"></i></span></a>
+                                </div>
+                            </li>
+                            <li>
+                                <div sec:authorize="isAuthenticated()" class="top_menu">
+                                    <a href="/logout">Logout <span class="indicator"><i
+                                            class="fa fa-angle-right"></i></span></a>
+                                </div>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-right navicon">
+                    <a id="nav-toggle" class="nav_slide_button" href="#"><span></span></a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2 text-center inner">
+                    <h1 class="animated fadeInDown">UNIVERSITY<span>SCHEDULE</span></h1>
+                    <div>
+                        <p th:if="${findInstitutions} == false and ${findGroups} == false
+                            and ${checkInstitution} == null" class="animated fadeInUp delay-05s"><em>Input
+                            what city your university is
+                            in</em></p>
+                        <p th:if="${findInstitutions} == true and ${checkUniversitySchedule} == true or
+                            ${checkInstitution} == false"
+                           class="animated fadeInUp delay-05s"><em>Input your
+                            university name</em></p>
+                        <p th:if="${findGroups} == true"
+                           class="animated fadeInUp delay-05s"><em>Input your
+                            group name</em></p>
+                        <p th:if="${findInstitutions} == true and ${checkUniversitySchedule} == false"
+                           class="animated fadeInUp delay-05s"><em>We will add the schedule for the institutions this
+                            city
+                            soon.</em></p>
+                    </div>
+                </div>
+            </div>
+            <form th:if="${findInstitutions} == false and ${findGroups} == false
+                         and ${checkInstitution} == null" th:action="@{/schedule/send-city}" method="post">
+                <div id="city_div">
+                    <div>
+                        <div class="col-md-6 col-md-offset-3 text-center">
+                            <label>
+                                <input onkeyup="setCityData()" type="text" name="city" id="city-input"
+                                       placeholder="Input city..." class="input-btn">
+                                <datalist id="city">
+                                    <option th:each="city : ${cities}"
+                                            th:value="${city.getName()}">
+                                </datalist>
+                            </label>
+                            <div style="color: red" th:if="${checkCity} == false">
+                                Wrong city, select one of the proposed and try again.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3 text-center">
+                            <input class="learn-more-btn" type="submit" value="Next"/>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <form th:if="${findInstitutions} == true and ${checkUniversitySchedule} == true or
+                            ${checkInstitution} == false"
+                  th:action="@{/schedule/send-institution}" method="post">
+                <input type="hidden" name="city" th:value="${city}">
+                <div id="institution_div">
+                    <div>
+                        <div class="col-md-6 col-md-offset-3 text-center">
+                            <label>
+                                <input onkeyup="setInstitutionData()" type="text" name="institution"
+                                       id="institution-input"
+                                       placeholder="Input institutions..."
+                                       class="input-btn">
+                                <datalist id="institution">
+                                    <option th:each="institution : ${institutions}"
+                                            th:value="${institution.getName()}">
+                                </datalist>
+                            </label>
+                            <div style="color: red" th:if="${checkInstitution} == false">
+                                Wrong institution, select one of the proposed and try again.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3 text-center">
+                            <input class="learn-more-btn" type="submit" value="Next"/>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <form th:if="${findGroups} == true"
+                  th:action="@{/schedule/get-group-schedule}" method="post">
+                <input type="hidden" name="city" th:value="${city}">
+                <input type="hidden" name="institution" th:value="${institution}">
+                <div id="group_div">
+                    <div>
+                        <div class="col-md-6 col-md-offset-3 text-center">
+                            <label>
+                                <input type="text" name="group"
+                                       id="group-input"
+                                       placeholder="Input your group..."
+                                       class="input-btn">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 col-md-offset-3 text-center">
+                            <input class="learn-more-btn" type="submit" value="Next"/>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</header>
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="/js/waypoints.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/scripts.js"></script>
+<script src="/js/jquery.flexslider.js"></script>
+<script src="/js/modernizr.js"></script>
+</body>
+</html>
