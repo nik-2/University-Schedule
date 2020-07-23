@@ -6,6 +6,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * The type Week.
+ */
 @Getter
 @Setter
 @Entity
@@ -23,9 +26,17 @@ public class Week {
     @ManyToMany(mappedBy = "weekNumber")
     private List<Subject> subjects;
 
+    /**
+     * Instantiates a new Week.
+     */
     public Week() {
     }
 
+    /**
+     * Instantiates a new Week.
+     *
+     * @param weekNumber the week number
+     */
     public Week(int weekNumber){
         this.weekNumber = weekNumber;
     }

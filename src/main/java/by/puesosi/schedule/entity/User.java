@@ -15,6 +15,9 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
+/**
+ * The type User.
+ */
 @Entity
 @Getter
 @Setter
@@ -59,7 +62,7 @@ public class User implements UserDetails {
     @Column(name = "google_name")
     private String googleName;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToMany
     private List<Group> groups;
 
     @ManyToMany(fetch = FetchType.EAGER)
@@ -68,9 +71,20 @@ public class User implements UserDetails {
     @Column(name = "last_visit")
     private LocalDateTime lastVisit;
 
+    /**
+     * Instantiates a new User.
+     */
     public User() {
     }
 
+    /**
+     * Instantiates a new User.
+     *
+     * @param username  the username
+     * @param email     the email
+     * @param firstName the first name
+     * @param lastName  the last name
+     */
     public User(String username, String email, String firstName, String lastName){
         this.email = email;
         this.firstName = firstName;

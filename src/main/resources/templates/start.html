@@ -32,24 +32,32 @@
                         <ul class="top-nav">
                             <li><a href="/schedule/">Home page <span class="indicator"><i
                                     class="fa fa-angle-right"></i></span></a></li>
-                            <li>
-                                <div sec:authorize="!isAuthenticated()">
+                            <div sec:authorize="!isAuthenticated()">
+                                <li>
                                     <a href="/login">Sign In <span class="indicator"><i
                                             class="fa fa-angle-right"></i></span></a>
-                                </div>
-                            </li>
-                            <li>
-                                <div sec:authorize="!isAuthenticated()">
+                                </li>
+                                <li>
                                     <a href="/registration">Sign Up <span class="indicator"><i
                                             class="fa fa-angle-right"></i></span></a>
-                                </div>
-                            </li>
-                            <li>
-                                <div sec:authorize="isAuthenticated()" class="top_menu">
+                                </li>
+                            </div>
+                            <div sec:authorize="isAuthenticated()" class="top_menu">
+                                <li>
+                                    <div sec:authorize="hasRole('USER')">
+                                        <a href="/schedule/user/">Profile<span class="indicator"><i
+                                                class="fa fa-angle-right"></i></span></a>
+                                    </div>
+                                    <div sec:authorize="hasRole('ADMIN')">
+                                        <a href="/schedule/admin/">Profile<span class="indicator"><i
+                                                class="fa fa-angle-right"></i></span></a>
+                                    </div>
+                                </li>
+                                <li>
                                     <a href="/logout">Logout <span class="indicator"><i
                                             class="fa fa-angle-right"></i></span></a>
-                                </div>
-                            </li>
+                                </li>
+                            </div>
                         </ul>
                     </nav>
                 </div>

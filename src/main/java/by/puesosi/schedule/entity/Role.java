@@ -8,6 +8,9 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The type Role.
+ */
 @Table(name = "role")
 @Entity
 @Getter
@@ -30,9 +33,18 @@ public class Role implements GrantedAuthority {
         return getName();
     }
 
+    /**
+     * Instantiates a new Role.
+     */
     public Role() {
     }
 
+    /**
+     * Instantiates a new Role.
+     *
+     * @param id   the id
+     * @param name the name
+     */
     public Role(int id, String name){
         this.id = id;
         this.name = name;

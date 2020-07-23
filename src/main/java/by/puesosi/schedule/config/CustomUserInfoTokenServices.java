@@ -28,7 +28,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The type Custom user info token services.
+ */
 public class CustomUserInfoTokenServices implements ResourceServerTokenServices {
+    /**
+     * The Logger.
+     */
     protected final Log logger = LogFactory.getLog(this.getClass());
     private final String userInfoEndpointUrl;
     private final String clientId;
@@ -38,28 +44,59 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
     private PrincipalExtractor principalExtractor = new FixedPrincipalExtractor();
     private UserRepository userRepository;
 
+    /**
+     * Instantiates a new Custom user info token services.
+     *
+     * @param userInfoEndpointUrl the user info endpoint url
+     * @param clientId            the client id
+     */
     public CustomUserInfoTokenServices(String userInfoEndpointUrl, String clientId) {
         this.userInfoEndpointUrl = userInfoEndpointUrl;
         this.clientId = clientId;
     }
 
+    /**
+     * Sets user repository.
+     *
+     * @param userRepository the user repository
+     */
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
+    /**
+     * Sets token type.
+     *
+     * @param tokenType the token type
+     */
     public void setTokenType(String tokenType) {
         this.tokenType = tokenType;
     }
 
+    /**
+     * Sets rest template.
+     *
+     * @param restTemplate the rest template
+     */
     public void setRestTemplate(OAuth2RestOperations restTemplate) {
         this.restTemplate = restTemplate;
     }
 
+    /**
+     * Sets authorities extractor.
+     *
+     * @param authoritiesExtractor the authorities extractor
+     */
     public void setAuthoritiesExtractor(AuthoritiesExtractor authoritiesExtractor) {
         Assert.notNull(authoritiesExtractor, "AuthoritiesExtractor must not be null");
         this.authoritiesExtractor = authoritiesExtractor;
     }
 
+    /**
+     * Sets principal extractor.
+     *
+     * @param principalExtractor the principal extractor
+     */
     public void setPrincipalExtractor(PrincipalExtractor principalExtractor) {
         Assert.notNull(principalExtractor, "PrincipalExtractor must not be null");
         this.principalExtractor = principalExtractor;
@@ -106,6 +143,12 @@ public class CustomUserInfoTokenServices implements ResourceServerTokenServices 
         return new OAuth2Authentication(request, token);
     }
 
+    /**
+     * Gets principal.
+     *
+     * @param map the map
+     * @return the principal
+     */
     protected Object getPrincipal(Map<String, Object> map) {
         Object principal = this.principalExtractor.extractPrincipal(map);
         return principal == null ? "unknown" : principal;

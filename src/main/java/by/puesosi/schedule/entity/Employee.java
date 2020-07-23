@@ -6,6 +6,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * The type Employee.
+ */
 @Getter
 @Setter
 @Entity
@@ -25,9 +28,18 @@ public class Employee {
     @Column(name = "mail")
     private String employeeMail;
 
+    /**
+     * Instantiates a new Employee.
+     */
     public Employee() {
     }
 
+    /**
+     * Instantiates a new Employee.
+     *
+     * @param employeeName the employee name
+     * @param employeeMail the employee mail
+     */
     public Employee(String employeeName, String employeeMail){
         this.employeeName = employeeName;
         this.employeeMail = employeeMail;

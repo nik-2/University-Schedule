@@ -11,21 +11,43 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.validation.Valid;
 
+/**
+ * The type Registration controller.
+ */
 @Controller
 public class RegistrationController {
 
     private RegistrationService registrationService;
 
+    /**
+     * Instantiates a new Registration controller.
+     *
+     * @param registrationService the registration service
+     */
     public RegistrationController(RegistrationService registrationService){
         this.registrationService = registrationService;
     }
 
+    /**
+     * Get registration page string.
+     *
+     * @param model the model
+     * @return the string
+     */
     @GetMapping("/registration")
     public String getRegistrationPage(Model model){
         model.addAttribute("user", new User());
         return "guest/register";
     }
 
+    /**
+     * Check registration info string.
+     *
+     * @param user          the user
+     * @param bindingResult the binding result
+     * @param model         the model
+     * @return the string
+     */
     @PostMapping("/registration")
     public String checkRegistrationInfo(@ModelAttribute("user") @Valid User user, BindingResult bindingResult, Model model){
         if(bindingResult.hasErrors()){

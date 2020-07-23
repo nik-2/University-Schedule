@@ -1,7 +1,9 @@
 package by.puesosi.schedule.controller;
 
 import by.puesosi.schedule.entity.Institution;
+import by.puesosi.schedule.entity.User;
 import by.puesosi.schedule.service.Service;
+import by.puesosi.schedule.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,22 +13,54 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 
+/**
+ * The type Schedule controller.
+ */
 @Controller
 @RequestMapping("/schedule")
 public class ScheduleController {
 
     private Service service;
+    private UserService userService;
 
+    /**
+     * Instantiates a new Schedule controller.
+     */
     public ScheduleController() {
     }
 
+    /**
+     * Instantiates a new Schedule controller.
+     *
+     * @param service     the service
+     * @param userService the user service
+     */
     @Autowired
-    public ScheduleController(Service service) {
+    public ScheduleController(Service service, UserService userService) {
         this.service = service;
+        this.userService = userService;
     }
 
+    /**
+     * View access denied string.
+     *
+     * @return the string
+     */
+    @GetMapping("/error")
+    public String viewAccessDenied(){
+        return "error/access-denied";
+    }
+
+    /**
+     * Choose schedule string.
+     *
+     * @param model the model
+     * @return the string
+     */
+    @SuppressWarnings("unchecked")
     @GetMapping("/")
     public String chooseSchedule(Model model) {
         List<Institution> institutions = (List<Institution>) model.asMap().get("institutions");
@@ -54,6 +88,13 @@ public class ScheduleController {
         return "start";
     }
 
+    /**
+     * Gets institution.
+     *
+     * @param city               the city
+     * @param redirectAttributes the redirect attributes
+     * @return the institution
+     */
     @PostMapping("/send-city")
     public String getInstitution(@RequestParam("city") String city, RedirectAttributes redirectAttributes) {
         boolean checkCity = service.checkCity(city);
@@ -64,15 +105,23 @@ public class ScheduleController {
         List<Institution> institutions = service.findInstitutions(city);
         redirectAttributes.addFlashAttribute("institutions", institutions);
         redirectAttributes.addFlashAttribute("findInstitutions", true);
-        if(!institutions.isEmpty()){
+        if (!institutions.isEmpty()) {
             redirectAttributes.addFlashAttribute("checkUniversitySchedule", true);
-        }else {
+        } else {
             redirectAttributes.addFlashAttribute("checkUniversitySchedule", false);
         }
         redirectAttributes.addFlashAttribute("city", city);
         return "redirect:/schedule/";
     }
 
+    /**
+     * Gets group.
+     *
+     * @param city               the city
+     * @param institution        the institution
+     * @param redirectAttributes the redirect attributes
+     * @return the group
+     */
     @PostMapping("/send-institution")
     public String getGroup(@RequestParam("city") String city, @RequestParam("institution") String institution,
                            RedirectAttributes redirectAttributes) {
@@ -87,11 +136,27 @@ public class ScheduleController {
         return "redirect:/schedule/";
     }
 
+    /**
+     * Gets schedule.
+     *
+     * @param principal   the principal
+     * @param model       the model
+     * @param group       the group
+     * @param city        the city
+     * @param institution the institution
+     * @return the schedule
+     */
     @PostMapping("/get-group-schedule")
-    public String getSchedule(Model model, @RequestParam("group") String group,
+    public String getSchedule(Principal principal, Model model, @RequestParam("group") String group,
                               @RequestParam("city") String city,
                               @RequestParam("institution") String institution) {
+        if (principal != null) {
+            User user = userService.getCurrentUser(principal);
+            model.addAttribute("haveGroup", userService.checkGroupAvailability(user, city, institution, group));
+        }
         model.addAttribute("group", group);
+        model.addAttribute("city", city);
+        model.addAttribute("institution", institution);
         model.addAttribute("schedule", service.findGroupSchedule(group, city, institution));
         return "schedule-group";
     }

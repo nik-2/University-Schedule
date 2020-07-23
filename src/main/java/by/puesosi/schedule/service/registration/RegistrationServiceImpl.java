@@ -9,12 +9,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 
+/**
+ * The type Registration service.
+ */
 @Service
 public class RegistrationServiceImpl implements RegistrationService {
 
     private UserRepository userRepository;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
+    /**
+     * Instantiates a new Registration service.
+     *
+     * @param userRepository        the user repository
+     * @param bCryptPasswordEncoder the b crypt password encoder
+     */
     @Autowired
     public RegistrationServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder){
         this.userRepository = userRepository;

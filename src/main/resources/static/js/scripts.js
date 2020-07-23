@@ -154,6 +154,26 @@ function setCityData() {
     }
 }
 
+function setGroupData() {
+    let data = document.getElementById("group-input").value;
+    if (data.length == 1) {
+        document.getElementById("group-input").setAttribute('list', 'group');    //This will add attribute to the input
+    }
+    if (data.length == 0) {
+        document.getElementById("group-input").removeAttribute('list');         //This will remove the attribute from the input
+    }
+}
+
+function setDeleteGroupData() {
+    let data = document.getElementById("delete-group-input").value;
+    if (data.length == 1) {
+        document.getElementById("delete-group-input").setAttribute('list', 'delete-group');    //This will add attribute to the input
+    }
+    if (data.length == 0) {
+        document.getElementById("delete-group-input").removeAttribute('list');         //This will remove the attribute from the input
+    }
+}
+
 function setInstitutionData() {
     let data = document.getElementById("institution-input").value;
     if (data.length == 1) {
@@ -167,15 +187,24 @@ function setInstitutionData() {
 function setPadding(checkCity, checkInstitution, findInstitutions, checkUniversitySchedule) {
     if (checkCity === false || checkInstitution === false) {
         document.getElementById('hero').setAttribute('style', 'padding: 0 0 195px 0 ');
-    }
-    else {
+    } else {
         if (findInstitutions === true && checkUniversitySchedule === false) {
             document.getElementById('hero').setAttribute('style', 'padding: 0 0 307px 0');
-        }
-        else {
+        } else {
             document.getElementById('hero').setAttribute('style', 'padding: 0 0 214px 0');
         }
     }
 }
 
+function setProfilePadding(groups, error) {
+    if (groups === 0) {
+        document.getElementById('hero').setAttribute('style', 'padding: 0 0 258px 0 ');
+    } else {
+        if (error === true) {
+            document.getElementById('hero').setAttribute('style', 'padding: 0 0 78px 0');
+        } else {
+            document.getElementById('hero').setAttribute('style', 'padding: 0 0 180px 0');
+        }
+    }
+}
 

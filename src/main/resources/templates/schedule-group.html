@@ -1,282 +1,430 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      xmlns="http://www.w3.org/1999/html">
 <head>
     <link rel="stylesheet" type="text/css" href="/css/schedule-group.css" media="screen" charset="utf-8"/>
+    <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="http://netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/flexslider.css" rel="stylesheet">
+    <link href="/css/styles.css" rel="stylesheet">
+    <link href="/css/queries.css" rel="stylesheet">
+    <link href="/css/animate.css" rel="stylesheet">
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="/js/waypoints.min.js"></script>
+    <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/scripts.js"></script>
+    <script src="/js/jquery.flexslider.js"></script>
+    <script src="/js/modernizr.js"></script>
     <meta charset="UTF-8">
-    <title>Schedule</title>
+    <title>Group Schedule</title>
 </head>
-<body style="background-color: rgba(100,100,200,0.31);">
-
-<div class="pre-header">
-    <h2 class="header">РАСПИСАНИЕ ГРУППЫ  </h2>
-    <h2 class="header" th:text="${group}"/>
-</div>
-
-<div th:if="${schedule.isEmpty()}">
-    <table class="table_dark">
-        <tr>
-            <th>Schedule not found</th>
-        </tr>
-    </table>
-</div>
-
-<div th:unless="${schedule.isEmpty()}">
-    <table class="table_dark">
-
-        <tr>
-            <th>Понедельник</th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-
-        <tr th:if="${schedule.get('Понедельник').isEmpty()}">
-            <td>В этот день пар нет</td>
-        </tr>
-
-        <tr th:unless="${schedule.get('Понедельник').isEmpty()}" th:each="scheduleSubject : ${schedule.get('Понедельник')}">
-
-            <td class="column1">
-                <div style="display: flex">
-                <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
-                    <div style="padding-right: 10px" th:text="${scheduleSubject.getEndLessonTime()}"/>
-                <div style="color: red" th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
-                    <div style="padding-right: 5px" th:unless="${weekNumber.getWeekNumber()} == 0" th:text="${weekNumber.getWeekNumber()} + ' '"/>
+<body id="top">
+<header id="home">
+    <nav>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-8 col-xs-offset-2">
+                    <nav class="pull">
+                        <ul class="top-nav">
+                            <li><a href="/schedule/">Home page <span class="indicator"><i
+                                    class="fa fa-angle-right"></i></span></a></li>
+                            <div sec:authorize="!isAuthenticated()">
+                                <li>
+                                    <a href="/login">Sign In <span class="indicator"><i
+                                            class="fa fa-angle-right"></i></span></a>
+                                </li>
+                                <li>
+                                    <a href="/registration">Sign Up <span class="indicator"><i
+                                            class="fa fa-angle-right"></i></span></a>
+                                </li>
+                            </div>
+                            <div sec:authorize="isAuthenticated()" class="top_menu">
+                                <li>
+                                    <div sec:authorize="hasRole('USER')">
+                                        <a href="/schedule/user/">Profile<span class="indicator"><i
+                                                class="fa fa-angle-right"></i></span></a>
+                                    </div>
+                                    <div sec:authorize="hasRole('ADMIN')">
+                                        <a href="/schedule/admin/">Profile<span class="indicator"><i
+                                                class="fa fa-angle-right"></i></span></a>
+                                    </div>
+                                </li>
+                                <div sec:authorize="hasRole('USER')" th:if="${haveGroup} == false">
+                                    <li>
+                                        <form id="add-group-form" method="post" action="/schedule/user/add-group-schedule">
+                                            <input type="hidden" name="group" th:value="${group}">
+                                            <input type="hidden" name="city" th:value="${city}">
+                                            <input type="hidden" name="institution" th:value="${institution}">
+                                            <a href="#" class="schedule-input"
+                                               onclick="document.getElementById('add-group-form').submit(); return false;">Add this schedule to
+                                                profile<span class="indicator"><i
+                                                        class="fa fa-angle-right"></i></span></a>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <a href="/logout">Logout <span class="indicator"><i
+                                                class="fa fa-angle-right"></i></span></a>
+                                    </li>
+                                </div>
+                                <div sec:authorize="hasRole('USER')" th:if="${haveGroup} == true">
+                                    <li>
+                                        <a href="/logout">Logout <span class="indicator"><i
+                                                class="fa fa-angle-right"></i></span></a>
+                                    </li>
+                                </div>
+                                <div sec:authorize="hasRole('ADMIN')">
+                                    <li>
+                                        <a href="/logout">Logout <span class="indicator"><i
+                                                class="fa fa-angle-right"></i></span></a>
+                                    </li>
+                                </div>
+                            </div>
+                        </ul>
+                    </nav>
                 </div>
-                <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
+            </div>
+        </div>
+    </nav>
+    <section class="hero" id="hero">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-right navicon">
+                    <a id="nav-toggle" class="nav_slide_button" href="#"><span></span></a>
                 </div>
-            </td>
-
-            <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
-
-            <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
-
-            <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
-                <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
-                    <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
-                    <div th:unless="${employee.getEmployeeMail()} == null" th:text="${employee.getEmployeeMail()}"/>
-                </div>
-            </td>
-
-            <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
-
-            <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
-                <div th:each="auditory : ${scheduleSubject.getAuditory()}" th:text="${auditory.getName()}"/>
-                <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}" th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
-            </td>
-
-        </tr>
-    </table>
-
-    <table class="table_dark">
-        <tr>
-            <th>Вторник</th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr th:if="${schedule.get('Вторник').isEmpty()}">
-            <td>В этот день пар нет</td>
-        </tr>
-        <tr th:unless="${schedule.get('Вторник').isEmpty()}" th:each="scheduleSubject : ${schedule.get('Вторник')}">
-            <td class="column1">
-                <div style="display: flex">
-                    <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
-                    <div style="padding-right: 10px" th:text="${scheduleSubject.getEndLessonTime()}"/>
-                    <div style="color: red" th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
-                        <div style="padding-right: 5px" th:unless="${weekNumber.getWeekNumber()} == 0" th:text="${weekNumber.getWeekNumber()} + ' '"/>
+            </div>
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2 text-center inner">
+                    <div style="margin-top: -135px" class="pre-header">
+                        <h2 class="header">РАСПИСАНИЕ ГРУППЫ </h2>
+                        <h2 class="header" th:text="${group}"/>
+                        <div class="header" sec:authorize="hasRole('USER')">
+                            <div th:if="${haveGroup} == true">
+                                <h2 class="header" style="color: green">&#10004;</h2>
+                            </div>
+                        </div>
                     </div>
-                    <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
-                </div>
-            </td>
 
-            <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
-
-            <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
-
-            <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
-                <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
-                    <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
-                    <div th:unless="${employee.getEmployeeMail()} == null" th:text="${employee.getEmployeeMail()}"/>
-                </div>
-            </td>
-
-            <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
-
-            <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
-                <div th:each="auditory : ${scheduleSubject.getAuditory()}" th:text="${auditory.getName()}"/>
-                <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}" th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
-            </td>
-        </tr>
-    </table>
-
-    <table class="table_dark">
-        <tr>
-            <th>Среда</th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr th:if="${schedule.get('Среда').isEmpty()}">
-            <td>В этот день пар нет</td>
-        </tr>
-        <tr th:unless="${schedule.get('Среда').isEmpty()}" th:each="scheduleSubject : ${schedule.get('Среда')}">
-            <td class="column1">
-                <div style="display: flex">
-                    <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
-                    <div style="padding-right: 10px" th:text="${scheduleSubject.getEndLessonTime()}"/>
-                    <div style="color: red" th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
-                        <div style="padding-right: 5px" th:unless="${weekNumber.getWeekNumber()} == 0" th:text="${weekNumber.getWeekNumber()} + ' '"/>
+                    <div th:if="${schedule.isEmpty()}">
+                        <table class="table_dark">
+                            <tr>
+                                <th>Schedule not found</th>
+                            </tr>
+                        </table>
                     </div>
-                    <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
-                </div>
-            </td>
 
-            <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
+                    <div th:unless="${schedule.isEmpty()}">
+                        <table class="table_dark">
 
-            <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
+                            <tr>
+                                <th>Понедельник</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
 
-            <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
-                <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
-                    <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
-                    <div th:unless="${employee.getEmployeeMail()} == null" th:text="${employee.getEmployeeMail()}"/>
-                </div>
-            </td>
+                            <tr th:if="${schedule.get('Понедельник').isEmpty()}">
+                                <td>В этот день пар нет</td>
+                            </tr>
 
-            <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
+                            <tr th:unless="${schedule.get('Понедельник').isEmpty()}"
+                                th:each="scheduleSubject : ${schedule.get('Понедельник')}">
 
-            <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
-                <div th:each="auditory : ${scheduleSubject.getAuditory()}" th:text="${auditory.getName()}"/>
-                <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}" th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
-            </td>
-        </tr>
-    </table>
+                                <td class="column1">
+                                    <div style="display: flex">
+                                        <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
+                                        <div style="padding-right: 10px"
+                                             th:text="${scheduleSubject.getEndLessonTime()}"/>
+                                        <div style="color: red"
+                                             th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
+                                            <div style="padding-right: 5px"
+                                                 th:unless="${weekNumber.getWeekNumber()} == 0"
+                                                 th:text="${weekNumber.getWeekNumber()} + ' '"/>
+                                        </div>
+                                        <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
+                                    </div>
+                                </td>
 
-    <table class="table_dark">
-        <tr>
-            <th>Четверг</th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr th:if="${schedule.get('Четверг').isEmpty()}">
-            <td>В этот день пар нет</td>
-        </tr>
-        <tr th:unless="${schedule.get('Четверг').isEmpty()}" th:each="scheduleSubject : ${schedule.get('Четверг')}">
-            <td class="column1">
-                <div style="display: flex">
-                    <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
-                    <div style="padding-right: 10px" th:text="${scheduleSubject.getEndLessonTime()}"/>
-                    <div style="color: red" th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
-                        <div style="padding-right: 5px" th:unless="${weekNumber.getWeekNumber()} == 0" th:text="${weekNumber.getWeekNumber()} + ' '"/>
+                                <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
+
+                                <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
+
+                                <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
+                                    <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
+                                        <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
+                                        <div th:unless="${employee.getEmployeeMail()} == null"
+                                             th:text="${employee.getEmployeeMail()}"/>
+                                    </div>
+                                </td>
+
+                                <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
+
+                                <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
+                                    <div th:each="auditory : ${scheduleSubject.getAuditory()}"
+                                         th:text="${auditory.getName()}"/>
+                                    <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}"
+                                         th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
+                                </td>
+
+                            </tr>
+                        </table>
+
+                        <table class="table_dark">
+                            <tr>
+                                <th>Вторник</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr th:if="${schedule.get('Вторник').isEmpty()}">
+                                <td>В этот день пар нет</td>
+                            </tr>
+                            <tr th:unless="${schedule.get('Вторник').isEmpty()}"
+                                th:each="scheduleSubject : ${schedule.get('Вторник')}">
+                                <td class="column1">
+                                    <div style="display: flex">
+                                        <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
+                                        <div style="padding-right: 10px"
+                                             th:text="${scheduleSubject.getEndLessonTime()}"/>
+                                        <div style="color: red"
+                                             th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
+                                            <div style="padding-right: 5px"
+                                                 th:unless="${weekNumber.getWeekNumber()} == 0"
+                                                 th:text="${weekNumber.getWeekNumber()} + ' '"/>
+                                        </div>
+                                        <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
+                                    </div>
+                                </td>
+
+                                <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
+
+                                <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
+
+                                <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
+                                    <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
+                                        <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
+                                        <div th:unless="${employee.getEmployeeMail()} == null"
+                                             th:text="${employee.getEmployeeMail()}"/>
+                                    </div>
+                                </td>
+
+                                <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
+
+                                <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
+                                    <div th:each="auditory : ${scheduleSubject.getAuditory()}"
+                                         th:text="${auditory.getName()}"/>
+                                    <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}"
+                                         th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="table_dark">
+                            <tr>
+                                <th>Среда</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr th:if="${schedule.get('Среда').isEmpty()}">
+                                <td>В этот день пар нет</td>
+                            </tr>
+                            <tr th:unless="${schedule.get('Среда').isEmpty()}"
+                                th:each="scheduleSubject : ${schedule.get('Среда')}">
+                                <td class="column1">
+                                    <div style="display: flex">
+                                        <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
+                                        <div style="padding-right: 10px"
+                                             th:text="${scheduleSubject.getEndLessonTime()}"/>
+                                        <div style="color: red"
+                                             th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
+                                            <div style="padding-right: 5px"
+                                                 th:unless="${weekNumber.getWeekNumber()} == 0"
+                                                 th:text="${weekNumber.getWeekNumber()} + ' '"/>
+                                        </div>
+                                        <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
+                                    </div>
+                                </td>
+
+                                <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
+
+                                <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
+
+                                <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
+                                    <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
+                                        <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
+                                        <div th:unless="${employee.getEmployeeMail()} == null"
+                                             th:text="${employee.getEmployeeMail()}"/>
+                                    </div>
+                                </td>
+
+                                <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
+
+                                <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
+                                    <div th:each="auditory : ${scheduleSubject.getAuditory()}"
+                                         th:text="${auditory.getName()}"/>
+                                    <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}"
+                                         th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="table_dark">
+                            <tr>
+                                <th>Четверг</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr th:if="${schedule.get('Четверг').isEmpty()}">
+                                <td>В этот день пар нет</td>
+                            </tr>
+                            <tr th:unless="${schedule.get('Четверг').isEmpty()}"
+                                th:each="scheduleSubject : ${schedule.get('Четверг')}">
+                                <td class="column1">
+                                    <div style="display: flex">
+                                        <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
+                                        <div style="padding-right: 10px"
+                                             th:text="${scheduleSubject.getEndLessonTime()}"/>
+                                        <div style="color: red"
+                                             th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
+                                            <div style="padding-right: 5px"
+                                                 th:unless="${weekNumber.getWeekNumber()} == 0"
+                                                 th:text="${weekNumber.getWeekNumber()} + ' '"/>
+                                        </div>
+                                        <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
+                                    </div>
+                                </td>
+
+                                <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
+
+                                <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
+
+                                <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
+                                    <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
+                                        <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
+                                        <div th:unless="${employee.getEmployeeMail()} == null"
+                                             th:text="${employee.getEmployeeMail()}"/>
+                                    </div>
+                                </td>
+
+                                <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
+
+                                <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
+                                    <div th:each="auditory : ${scheduleSubject.getAuditory()}"
+                                         th:text="${auditory.getName()}"/>
+                                    <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}"
+                                         th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="table_dark">
+                            <tr>
+                                <th>Пятница</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr th:if="${schedule.get('Пятница').isEmpty()}">
+                                <td>В этот день пар нет</td>
+                            </tr>
+                            <tr th:unless="${schedule.get('Пятница').isEmpty()}"
+                                th:each="scheduleSubject : ${schedule.get('Пятница')}">
+                                <td class="column1">
+                                    <div style="display: flex">
+                                        <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
+                                        <div style="padding-right: 10px"
+                                             th:text="${scheduleSubject.getEndLessonTime()}"/>
+                                        <div style="color: red"
+                                             th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
+                                            <div style="padding-right: 5px"
+                                                 th:unless="${weekNumber.getWeekNumber()} == 0"
+                                                 th:text="${weekNumber.getWeekNumber()} + ' '"/>
+                                        </div>
+                                        <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
+                                    </div>
+                                </td>
+
+                                <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
+
+                                <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
+
+                                <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
+                                    <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
+                                        <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
+                                        <div th:unless="${employee.getEmployeeMail()} == null"
+                                             th:text="${employee.getEmployeeMail()}"/>
+                                    </div>
+                                </td>
+
+                                <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
+
+                                <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
+                                    <div th:each="auditory : ${scheduleSubject.getAuditory()}"
+                                         th:text="${auditory.getName()}"/>
+                                    <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}"
+                                         th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table class="table_dark">
+                            <tr>
+                                <th>Суббота</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                            <tr th:if="${schedule.get('Суббота').isEmpty()}">
+                                <td>В этот день пар нет</td>
+                            </tr>
+                            <tr th:unless="${schedule.get('Суббота').isEmpty()}"
+                                th:each="scheduleSubject : ${schedule.get('Суббота')}">
+                                <td class="column1">
+                                    <div style="display: flex">
+                                        <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
+                                        <div style="padding-right: 10px"
+                                             th:text="${scheduleSubject.getEndLessonTime()}"/>
+                                        <div style="color: red"
+                                             th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
+                                            <div style="padding-right: 5px"
+                                                 th:unless="${weekNumber.getWeekNumber()} == 0"
+                                                 th:text="${weekNumber.getWeekNumber()} + ' '"/>
+                                        </div>
+                                        <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
+                                    </div>
+                                </td>
+
+                                <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
+
+                                <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
+
+                                <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
+                                    <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
+                                        <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
+                                        <div th:unless="${employee.getEmployeeMail()} == null"
+                                             th:text="${employee.getEmployeeMail()}"/>
+                                    </div>
+                                </td>
+
+                                <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
+
+                                <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
+                                    <div th:each="auditory : ${scheduleSubject.getAuditory()}"
+                                         th:text="${auditory.getName()}"/>
+                                    <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}"
+                                         th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
+                                </td>
+                            </tr>
+                        </table>
                     </div>
-                    <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
                 </div>
-            </td>
-
-            <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
-
-            <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
-
-            <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
-                <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
-                    <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
-                    <div th:unless="${employee.getEmployeeMail()} == null" th:text="${employee.getEmployeeMail()}"/>
-                </div>
-            </td>
-
-            <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
-
-            <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
-                <div th:each="auditory : ${scheduleSubject.getAuditory()}" th:text="${auditory.getName()}"/>
-                <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}" th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
-            </td>
-        </tr>
-    </table>
-
-    <table class="table_dark">
-        <tr>
-            <th>Пятница</th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr th:if="${schedule.get('Пятница').isEmpty()}">
-            <td>В этот день пар нет</td>
-        </tr>
-        <tr th:unless="${schedule.get('Пятница').isEmpty()}" th:each="scheduleSubject : ${schedule.get('Пятница')}">
-            <td class="column1">
-                <div style="display: flex">
-                    <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
-                    <div style="padding-right: 10px" th:text="${scheduleSubject.getEndLessonTime()}"/>
-                    <div style="color: red" th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
-                        <div style="padding-right: 5px" th:unless="${weekNumber.getWeekNumber()} == 0" th:text="${weekNumber.getWeekNumber()} + ' '"/>
-                    </div>
-                    <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
-                </div>
-            </td>
-
-            <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
-
-            <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
-
-            <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
-                <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
-                    <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
-                    <div th:unless="${employee.getEmployeeMail()} == null" th:text="${employee.getEmployeeMail()}"/>
-                </div>
-            </td>
-
-            <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
-
-            <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
-                <div th:each="auditory : ${scheduleSubject.getAuditory()}" th:text="${auditory.getName()}"/>
-                <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}" th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
-            </td>
-        </tr>
-    </table>
-
-    <table class="table_dark">
-        <tr>
-            <th>Суббота</th>
-            <th></th>
-            <th></th>
-            <th></th>
-        </tr>
-        <tr th:if="${schedule.get('Суббота').isEmpty()}">
-            <td>В этот день пар нет</td>
-        </tr>
-        <tr th:unless="${schedule.get('Суббота').isEmpty()}" th:each="scheduleSubject : ${schedule.get('Суббота')}">
-            <td class="column1">
-                <div style="display: flex">
-                    <div th:text="${scheduleSubject.getStartLessonTime()} + '-'"/>
-                    <div style="padding-right: 10px" th:text="${scheduleSubject.getEndLessonTime()}"/>
-                    <div style="color: red" th:each="weekNumber : ${scheduleSubject.getWeekNumber()}">
-                        <div style="padding-right: 5px" th:unless="${weekNumber.getWeekNumber()} == 0" th:text="${weekNumber.getWeekNumber()} + ' '"/>
-                    </div>
-                    <div style="color: limegreen" th:text="${scheduleSubject.getNote()}"/>
-                </div>
-            </td>
-
-            <td class="column2" th:text="${scheduleSubject.getSubjectName()}"></td>
-
-            <td class="column3" th:if="${scheduleSubject.getEmployee().isEmpty()}"></td>
-
-            <td class="column3" th:unless="${scheduleSubject.getEmployee().isEmpty()}">
-                <div style="display: flex" th:each="employee : ${scheduleSubject.getEmployee()}">
-                    <div style="padding-right: 10px" th:text="${employee.getEmployeeName()}"/>
-                    <div th:unless="${employee.getEmployeeMail()} == null" th:text="${employee.getEmployeeMail()}"/>
-                </div>
-            </td>
-
-            <td class="column4" th:if="${scheduleSubject.getAuditory().isEmpty()}"></td>
-
-            <td class="column4" th:unless="${scheduleSubject.getAuditory().isEmpty()}">
-                <div th:each="auditory : ${scheduleSubject.getAuditory()}" th:text="${auditory.getName()}"/>
-                <div style="color: green" th:unless="${scheduleSubject.getSubgroup().equals('')}" th:text="${scheduleSubject.getSubgroup()} + ' п.'"/>
-            </td>
-        </tr>
-    </table>
-</div>
+            </div>
+        </div>
+    </section>
+</header>
 </body>
 </html>

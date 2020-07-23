@@ -6,6 +6,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * The type Subject.
+ */
 @Getter
 @Setter
 @Entity
@@ -53,9 +56,21 @@ public class Subject {
     @JoinColumn(name = "institution_id")
     private Institution institution;
 
+    /**
+     * Instantiates a new Subject.
+     */
     public Subject() {
     }
 
+    /**
+     * Instantiates a new Subject.
+     *
+     * @param startLessonTime the start lesson time
+     * @param endLessonTime   the end lesson time
+     * @param subjectName     the subject name
+     * @param note            the note
+     * @param subgroup        the subgroup
+     */
     public Subject(String startLessonTime, String endLessonTime, String subjectName, String note, String subgroup){
         this.startLessonTime = startLessonTime;
         this.endLessonTime = endLessonTime;

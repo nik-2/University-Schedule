@@ -6,6 +6,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * The type Day of week.
+ */
 @Getter
 @Setter
 @Entity
@@ -22,9 +25,17 @@ public class DayOfWeek {
     @OneToMany(mappedBy = "day", cascade = CascadeType.ALL)
     private List<Subject> subjects;
 
+    /**
+     * Instantiates a new Day of week.
+     */
     public DayOfWeek() {
     }
 
+    /**
+     * Instantiates a new Day of week.
+     *
+     * @param name the name
+     */
     public DayOfWeek(String name){
         this.name = name;
     }

@@ -66,12 +66,12 @@ Links
 ========================================================================== */
 /* * Addresses `outline` inconsistency between Chrome and other browsers. */
 
-a:focus {
+a:focus, button:focus {
     outline: thin dotted;
 }
 
 /* * Improves readability when focused and also mouse hovered in all browsers. */
-a:active, a:hover {
+a:active, a:hover, button:active, button:hover {
     outline: 0;
 }
 
@@ -378,7 +378,6 @@ h2 {
 
 h2::after {
     content: " ";
-    border: solid 2px #3dc9b3;
     display: block;
     width: 35px;
     margin: 25px auto;
@@ -471,7 +470,9 @@ nav ul li:last-child {
     border: none;
 }
 
-nav ul li a {
+nav ul li a, nav ul li button {
+    border: none;
+    background: none;
     color: rgba(255, 255, 255, 0.6);
     display: block;
     padding: 20px;
@@ -483,7 +484,7 @@ nav ul li a {
     position: relative;
 }
 
-nav ul li a:hover, nav ul li a:focus {
+nav ul li a:hover, nav ul li a:focus, nav ul li button:hover, nav ul li button:focus {
     text-decoration: none;
     color: rgba(255, 255, 255, 1);
 }
@@ -570,7 +571,7 @@ Hero
     background: url('../img/hero-bg.jpg') no-repeat;
     background-size: 100% 100%;
     margin: 0;
-    /*padding: 0 0 214px 0;*/
+    /*padding: 0 0 258px 0;*/
 }
 
 .hero h1 {
@@ -597,7 +598,7 @@ Hero
     -o-border-radius: 5px;
     border: none;
     color: #fff;
-    outline:none !important;
+    outline: none !important;
     text-transform: uppercase;
     letter-spacing: 1px;
     display: inline-block;
@@ -606,6 +607,40 @@ Hero
     box-shadow: 0px 3px 0px 0px #309383;
     margin: 20px 0 0;
     font-weight: bold;
+}
+
+.profile-select {
+    background: rgba(61, 201, 179, 1);
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 5px;
+    border: none;
+    color: #fff;
+    margin-top: 16px;
+    outline: none !important;
+    letter-spacing: 1px;
+    display: inline-block;
+    -webkit-box-shadow: 0px 3px 0px 0px #309383;
+    -moz-box-shadow: 0px 3px 0px 0px #309383;
+    box-shadow: 0px 3px 0px 0px #309383;
+    font-weight: bold;
+}
+
+.profile-input {
+    color: #353535;
+    background: none;
+    border: none;
+    font-size: 17px;
+    -webkit-transition: all 0.5s;
+    -moz-transition: all 0.5s;
+    -o-transition: all 0.5s;
+    transition: all 0.5s;
+}
+
+.profile-input:hover, .profile-input:focus {
+    color: #3dc9b3;
+    text-decoration: none;
 }
 
 .learn-more-btn:hover, .learn-more-btn:focus {
@@ -622,7 +657,7 @@ Hero
     -webkit-border-radius: 5px;
     -o-border-radius: 5px;
     color: #4f4262;
-    outline:none;
+    outline: none;
     letter-spacing: 1px;
     display: inline-block;
     -webkit-box-shadow: 0px 3px 0px 0px #309383;
@@ -635,7 +670,7 @@ Hero
     background: rgba(61, 201, 179, 0.6);
 }
 
-.input-label{
+.input-label {
     color: #4f4262;
 }
 
@@ -643,3 +678,5 @@ input::-webkit-calendar-picker-indicator {
     display: none;
 }
 
+input::-moz-placeholder { color: #fff; }
+input::-webkit-input-placeholder { color: #fff; }

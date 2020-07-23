@@ -6,6 +6,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * The type Group.
+ */
 @Getter
 @Setter
 @Entity
@@ -19,15 +22,34 @@ public class Group {
     @Column(name = "name")
     private String name;
 
-    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL)
+    @OneToOne
+    @JoinColumn(name = "institution_id")
+    private Institution institution;
+
+    @OneToOne
+    @JoinColumn(name = "city_id")
+    private City city;
+
+    /**
+     * The Subjects.
+     */
+    @OneToMany(mappedBy = "group", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Subject> subjects;
 
     @ManyToMany(mappedBy = "groups")
     private List<User> users;
 
+    /**
+     * Instantiates a new Group.
+     */
     public Group() {
     }
 
+    /**
+     * Instantiates a new Group.
+     *
+     * @param name the name
+     */
     public Group(String name){
         this.name = name;
     }

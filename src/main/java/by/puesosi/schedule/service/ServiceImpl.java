@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * The type Service.
+ */
 @org.springframework.stereotype.Service
 public class ServiceImpl implements Service {
 
@@ -29,9 +32,25 @@ public class ServiceImpl implements Service {
     private InstitutionRepository institutionRepository;
     private UserRepository userRepository;
 
+    /**
+     * Instantiates a new Service.
+     */
     public ServiceImpl() {
     }
 
+    /**
+     * Instantiates a new Service.
+     *
+     * @param auditoryRepository    the auditory repository
+     * @param dayOfWeekRepository   the day of week repository
+     * @param employeeRepository    the employee repository
+     * @param groupRepository       the group repository
+     * @param subjectRepository     the subject repository
+     * @param weekRepository        the week repository
+     * @param cityRepository        the city repository
+     * @param institutionRepository the institution repository
+     * @param userRepository        the user repository
+     */
     @Autowired
     public ServiceImpl(AuditoryRepository auditoryRepository, DayOfWeekRepository dayOfWeekRepository,
                        EmployeeRepository employeeRepository, GroupRepository groupRepository,
@@ -115,6 +134,19 @@ public class ServiceImpl implements Service {
         return currentInstitution != null;
     }
 
+
+
+    @Override
+    public List<Group> findGroups() {
+        return groupRepository.findAll();
+    }
+
+    @Override
+    public boolean findGroup(String groupName, String cityName, String institutionName) {
+        Group group = groupRepository.findFirstByInstitution_NameAndCity_NameAndName(institutionName, cityName, groupName);
+        return group != null;
+    }
+
     private String getGroupSchedule(String group) {
         return getHtmlElements(group);
     }
@@ -150,12 +182,12 @@ public class ServiceImpl implements Service {
         int c6Number = 4;
         for (HtmlElement htmlItem : items) {
 
-            Group currentGroup = checkAndGetCurrentGroup(group);
-
-            DayOfWeek day = checkAndGetDayOfWeek(htmlItem);
-
             City currentCity = cityRepository.findCityByName("Минск");
             Institution currentInstitution = institutionRepository.findInstitutionByCityAndName(currentCity, "БГУИР");
+
+            Group currentGroup = checkAndGetCurrentGroup(group, currentInstitution, currentCity);
+
+            DayOfWeek day = checkAndGetDayOfWeek(htmlItem);
 
             List<HtmlElement> subjectList = htmlItem.getByXPath(".//div[@class='ng-tns-c6-" + c6Number + " ng-star-inserted']");
 
@@ -236,10 +268,12 @@ public class ServiceImpl implements Service {
         }
     }
 
-    private Group checkAndGetCurrentGroup(String group) {
-        Group currentGroup = groupRepository.findFirstByName(group);
+    private Group checkAndGetCurrentGroup(String group, Institution institution, City city) {
+        Group currentGroup = groupRepository.findFirstByNameAndInstitutionAndCity(group, institution, city);
         if (currentGroup == null) {
             currentGroup = new Group();
+            currentGroup.setCity(city);
+            currentGroup.setInstitution(institution);
             currentGroup.setName(group);
             groupRepository.save(currentGroup);
         }

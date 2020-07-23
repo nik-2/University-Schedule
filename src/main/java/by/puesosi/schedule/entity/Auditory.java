@@ -6,6 +6,9 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.util.List;
 
+/**
+ * The type Auditory.
+ */
 @Getter
 @Setter
 @Entity
@@ -22,9 +25,17 @@ public class Auditory {
     @ManyToMany(mappedBy = "auditory")
     private List<Subject> subjects;
 
+    /**
+     * Instantiates a new Auditory.
+     */
     public Auditory() {
     }
 
+    /**
+     * Instantiates a new Auditory.
+     *
+     * @param name the name
+     */
     public Auditory(String name){
         this.name = name;
     }
