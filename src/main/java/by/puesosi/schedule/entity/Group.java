@@ -39,6 +39,11 @@ public class Group {
     @ManyToMany(mappedBy = "groups")
     private List<User> users;
 
+    @PreRemove
+    public void removePositions() {
+        users.forEach(user -> user.getGroups().remove(this));
+    }
+
     /**
      * Instantiates a new Group.
      */
